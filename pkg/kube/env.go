@@ -419,6 +419,11 @@ func DoCreateEnvironmentGitRepo(batchMode bool, authConfigSvc auth.ConfigService
 			}
 			originalOrg := gitInfo.Organisation
 			originalRepo := gitInfo.Name
+
+			// debug
+			log.Logger().Infof("Git Info %s/%s\n", util.ColorInfo(originalOrg), util.ColorInfo(originalRepo))
+			log.Logger().Infof("Git Remote URL %s\n", util.ColorInfo(forkEnvGitURL))
+
 			if useForkForEnvGitRepo && gitInfo.IsGitHub() && provider.IsGitHub() && originalOrg != "" && originalRepo != "" {
 				// lets try fork the repository and rename it
 				repo, err := provider.ForkRepository(originalOrg, originalRepo, org)
@@ -443,6 +448,9 @@ func DoCreateEnvironmentGitRepo(batchMode bool, authConfigSvc auth.ConfigService
 				if err != nil {
 					return nil, nil, errors.Wrapf(err, "cloning the environment %q", repo.CloneURL)
 				}
+				//debug
+				log.Logger().Infof("Setting Remote URL %s\n", util.ColorInfo(forkEnvGitURL))
+
 				err = git.SetRemoteURL(dir, "upstream", forkEnvGitURL)
 				if err != nil {
 					return nil, nil, errors.Wrapf(err, "setting remote upstream %q in forked environment repo", forkEnvGitURL)
@@ -473,6 +481,11 @@ func DoCreateEnvironmentGitRepo(batchMode bool, authConfigSvc auth.ConfigService
 			return nil, nil, errors.Wrap(err, "creating the repository")
 		}
 
+		//debug
+		log.Logger().Infof("Git Repo Details %s\n", util.ColorInfo(repo))
+		log.Logger().Infof("Git Push URL %s\n", util.ColorInfo(repo.CloneURL))
+		jmcGitURL := strings.ReplaceAll(repo.CloneURL, "gitlab-5874c7f8b8-vgxnr", "gitlab.jnpr.belfast")
+		log.Logger().Infof("Git JMC URL %s\n", util.ColorInfo(jmcGitURL))
 		if forkEnvGitURL != "" {
 			// now lets clone the fork and push it...
 			dir, err := util.CreateUniqueDirectory(envDir, details.RepoName, util.MaximumNewDirectoryAttempts)
@@ -483,7 +496,8 @@ func DoCreateEnvironmentGitRepo(batchMode bool, authConfigSvc auth.ConfigService
 			if err != nil {
 				return nil, nil, errors.Wrapf(err, "cloning the forked environment %q into %q", forkEnvGitURL, dir)
 			}
-			pushGitURL, err := git.CreateAuthenticatedURL(repo.CloneURL, details.User)
+			//pushGitURL, err := git.CreateAuthenticatedURL(repo.CloneURL, details.User)
+			pushGitURL, err := git.CreateAuthenticatedURL(jmcGitURL, details.User)
 			if err != nil {
 				return nil, nil, errors.Wrapf(err, "creating the push URL for %q", repo.CloneURL)
 			}
@@ -491,23 +505,31 @@ func DoCreateEnvironmentGitRepo(batchMode bool, authConfigSvc auth.ConfigService
 			if err != nil {
 				return nil, nil, errors.Wrapf(err, "adding remote %q to forked env clone", forkEnvGitURL)
 			}
+			//err = git.UpdateRemote(dir, jmcGitURL)
 			err = git.UpdateRemote(dir, pushGitURL)
 			if err != nil {
 				return nil, nil, errors.Wrapf(err, "updating remote %q", pushGitURL)
 			}
+			log.Logger().Infof("Modify namespace %s\n", util.ColorInfo(env))
 			err = ModifyNamespace(handles.Out, dir, env, git, chartMuseumFn)
 			if err != nil {
 				return nil, nil, errors.Wrapf(err, "modifying dev environment namespace")
 			}
+			log.Logger().Infof("Adding values %s\n", util.ColorInfo(helmValues))
 			err = addValues(handles.Out, dir, helmValues, git)
 			if err != nil {
 				return nil, nil, errors.Wrap(err, "adding helm values into environment git repository")
 			}
+			log.Logger().Infof("Push To Master %s\n", util.ColorInfo(dir))
 			err = git.PushMaster(dir)
 			if err != nil {
 				return nil, nil, errors.Wrap(err, "push forked environment git repository")
 			}
-			log.Logger().Infof("Pushed Git repository to %s\n\n", util.ColorInfo(repo.HTMLURL))
+			log.Logger().Infof("Git html URL %s\n", util.ColorInfo(repo.HTMLURL))
+			jmcHtmlURL := strings.ReplaceAll(repo.HTMLURL, "gitlab-5874c7f8b8-vgxnr", "gitlab.jnpr.belfast")
+			log.Logger().Infof("HTML JMC URL %s\n", util.ColorInfo(jmcHtmlURL))
+			//log.Logger().Infof("Pushed Git repository to %s\n\n", util.ColorInfo(repo.HTMLURL))
+			log.Logger().Infof("Pushed Git repository to %s\n\n", util.ColorInfo(jmcHtmlURL))
 		}
 	}
 	return repo, provider, nil

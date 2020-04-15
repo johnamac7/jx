@@ -76,6 +76,8 @@ func NewCmdStepCreatePullRequestQuickStarts(commonOpts *opts.CommonOptions) *cob
 // ValidateQuickStartsOptions validates the common options for quickStarts pr steps
 func (o *StepCreatePullRequestQuickStartsOptions) ValidateQuickStartsOptions() error {
 	if len(o.GitURLs) == 0 {
+		//debug
+		log.Logger().Infof("step_create_pr_quickstarts - 80 Details 12 %s\n", o.GitURLs)
 		// Default in the versions repo
 		o.GitURLs = []string{config.DefaultVersionsURL}
 	}
@@ -103,6 +105,10 @@ func (o *StepCreatePullRequestQuickStartsOptions) Run() error {
 		o.SrcGitURL = o.sourceGitURL(q)
 		break
 	}
+
+	//debug
+	log.Logger().Infof("step_create_pr_quickstarts - 110 Details 12 %s\n", o.SrcGitURL)
+	log.Logger().Infof("step_create_pr_quickstarts - 111 Details 12 %s\n", o.GitURLs)
 
 	if err := o.ValidateQuickStartsOptions(); err != nil {
 		return errors.WithStack(err)

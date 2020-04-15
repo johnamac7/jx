@@ -158,11 +158,15 @@ func getServiceKindFromGitServices(jxClient versioned.Interface, ns string, gitS
 	list, err := gitServices.List(metav1.ListOptions{})
 	if err == nil {
 		for _, gs := range list.Items {
+			//debug
+			log.Logger().Infof("git_services - 162 Details 1 %s\n", gs.Spec.URL)
 			if gitUrlsEqual(gs.Spec.URL, gitServiceURL) {
 				return gs.Spec.GitKind, nil
 			}
 		}
 	}
+	//debug
+	log.Logger().Infof("git_services - 169 Details 2 %s\n", gitServiceURL)
 	return "", fmt.Errorf("no Git service resource found with URL '%s' in namespace %s", gitServiceURL, ns)
 }
 

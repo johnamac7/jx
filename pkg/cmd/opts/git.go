@@ -70,6 +70,8 @@ func (o *CommonOptions) CreateGitProvider(dir string) (*gits.GitRepository, gits
 	if err != nil {
 		return gitInfo, nil, nil, err
 	}
+	//debug
+	log.Logger().Infof("git - 74 Details 7 %s\n", gitInfo)
 	gitKind, err := o.GitServerKind(gitInfo)
 	ghOwner, err := o.GetGitHubAppOwner(gitInfo)
 	if err != nil {
@@ -193,6 +195,9 @@ func (o *CommonOptions) GitServerHostURLKind(hostURL string) (string, error) {
 		clusterAuthConfig = clusterAuthConfigSvc.Config()
 	}
 
+	//debug
+	log.Logger().Infof("git - 197 Details 4 %s\n", hostURL)
+
 	kind, err := kube.GetGitServiceKind(jxClient, kubeClient, devNs, clusterAuthConfig, hostURL)
 
 	if err != nil {
@@ -226,6 +231,8 @@ func (o *CommonOptions) GitProviderForURL(gitURL string, message string) (gits.G
 	if err != nil {
 		return nil, err
 	}
+	//debug
+	log.Logger().Infof("git - 235 Details 8 %s\n", gitInfo)
 	gitKind, err := o.GitServerKind(gitInfo)
 	if err != nil {
 		return nil, err
@@ -275,6 +282,8 @@ func (o *CommonOptions) CreateGitProviderForURLWithoutKind(gitURL string) (gits.
 	if err != nil {
 		return nil, gitInfo, err
 	}
+	//debug
+	log.Logger().Infof("git - 286 Details 8 %s\n", gitInfo)
 	gitKind, err := o.GitServerKind(gitInfo)
 	if err != nil {
 		return nil, gitInfo, err
@@ -430,6 +439,8 @@ func (o *CommonOptions) DisableFeatures(orgs []string, includes []string, exclud
 		if err != nil {
 			return errors.Wrapf(err, "parsing %s", org)
 		}
+		//debug
+		log.Logger().Infof("git - 437 Details 6 %s\n", info.HostURL())
 		kind, err := o.GitServerHostURLKind(info.HostURL())
 		if err != nil {
 			return errors.Wrapf(err, "determining git provider kind from %s", org)

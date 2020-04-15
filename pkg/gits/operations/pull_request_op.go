@@ -69,6 +69,8 @@ func (o *PullRequestOperation) CreatePullRequest(kind string, update ChangeFiles
 		if err != nil {
 			return nil, err
 		}
+		//debug
+		log.Logger().Infof("pull_req_op - 73 Details 11 %s\n", gitURL)
 		provider, _, err := o.CreateGitProviderForURLWithoutKind(gitURL)
 		if err != nil {
 			return nil, errors.Wrapf(err, "creating git provider for directory %s", dir)
@@ -83,6 +85,10 @@ func (o *PullRequestOperation) CreatePullRequest(kind string, update ChangeFiles
 		if forkInfo != nil {
 			gitInfo = forkInfo
 		}
+		//debug
+		log.Logger().Infof("pull_req_op - 89 Details 11 %s\n", o)
+		log.Logger().Infof("pull_req_op - 90 Details 11 %s\n", upstreamInfo)
+		log.Logger().Infof("pull_req_op - 91 Details 11 %s\n", gitInfo)
 		commitMessage, details, err := o.updateAndGenerateMessagesAndDependencyMatrix(dir, kind, upstreamInfo.Host, gitInfo, update)
 		if err != nil {
 			return nil, errors.WithStack(err)
@@ -112,6 +118,8 @@ func (o *PullRequestOperation) CreatePullRequest(kind string, update ChangeFiles
 // to batch e.g. in a single PR push/creation
 func (o *PullRequestOperation) WrapChangeFilesWithCommitFn(kind string, fn ChangeFilesFn) ChangeFilesFn {
 	return func(dir string, gitInfo *gits.GitRepository) ([]string, error) {
+		//debug
+		log.Logger().Infof("pull_req_op - 122 Details 11 %s\n", gitInfo)
 		commitMessage, prDetails, err := o.updateAndGenerateMessagesAndDependencyMatrix(dir, kind, gitInfo.Host, gitInfo, fn)
 		if err != nil {
 			return nil, errors.WithStack(err)
@@ -182,6 +190,9 @@ func (o *PullRequestOperation) updateAndGenerateMessagesAndDependencyMatrix(dir 
 		}
 		oldVersionsStr = oldVersionsStr + strings.Join(dedupedNonSemantic, ", ")
 	}
+
+	//debug
+	log.Logger().Infof("pull_req_op - 195 Details 11 %s\n", o)
 
 	// remove the v prefix if we are using a v tag
 	version := strings.TrimPrefix(o.Version, "v")
@@ -326,6 +337,11 @@ func (o PullRequestOperation) CreateDependencyUpdatePRDetails(kind string, srcRe
 	var assets []gits.GitReleaseAsset
 
 	if srcRepoURL != "" {
+		//debug
+		log.Logger().Infof("pull_req_op - 341 Details 10 %s\n", srcRepoURL)
+		srcRepoURL = strings.Replace(srcRepoURL, "https", "http", -1)
+		log.Logger().Infof("pull_req_op - 342 Details 10 %s\n", srcRepoURL)
+
 		provider, srcRepo, err := o.CreateGitProviderForURLWithoutKind(srcRepoURL)
 		if err != nil {
 			return "", nil, nil, nil, errors.Wrapf(err, "creating git provider for %s", srcRepoURL)
@@ -517,6 +533,8 @@ func CreatePullRequestMLBuildersFn(version string) ChangeFilesFn {
 func (o *PullRequestOperation) CreatePullRequestGitReleasesFn(name string) ChangeFilesFn {
 	return func(dir string, gitInfo *gits.GitRepository) ([]string, error) {
 		u := fmt.Sprintf("https://%s.git", name)
+		//debug
+		log.Logger().Infof("pull_req_op - 501 Details 9 %s\n", name)
 		provider, gitInfo, err := o.CreateGitProviderForURLWithoutKind(u)
 		if err != nil {
 			return nil, errors.Wrapf(err, "creating git provider for %s", u)

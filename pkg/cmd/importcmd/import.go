@@ -275,6 +275,8 @@ func (options *ImportOptions) Run() error {
 			}
 		}
 		if server.Kind == "" {
+			//debug
+			log.Logger().Infof("import - 279 Details 5 %s %s\n", server.URL, server.Kind)
 			server.Kind, err = options.GitServerHostURLKind(server.URL)
 			if err != nil {
 				return err
@@ -1072,6 +1074,8 @@ func (options *ImportOptions) addProwConfig(gitURL string, gitKind string) error
 				return nil, writeSourceRepoToYaml(dir, sr)
 			}
 
+			//debug
+			log.Logger().Infof("import - 1078 Details 3 %s\n", util.ColorInfo(devGitURL))
 			err := pro.CreatePullRequest("resource", changeFn)
 			if err != nil {
 				return errors.Wrapf(err, "failed to create Pull Request on the development environment git repository %s", devGitURL)
