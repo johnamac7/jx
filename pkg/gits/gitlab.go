@@ -152,6 +152,8 @@ func (g *GitlabProvider) CreateRepository(org string, name string, private bool)
 		Visibility:  &visibility,
 		NamespaceID: &namespaceID,
 	}
+	//debug
+	log.Logger().Infof("Git Propj Details %s\n", util.ColorInfo(p))
 
 	project, _, err := g.Client.Projects.CreateProject(p)
 	if err != nil {

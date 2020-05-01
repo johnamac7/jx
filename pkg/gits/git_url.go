@@ -22,7 +22,9 @@ func (i *GitRepository) IsGitHub() bool {
 
 // PullRequestURL returns the URL of a pull request of the given name/number
 func (i *GitRepository) PullRequestURL(prName string) string {
-	return util.UrlJoin("https://"+i.Host, i.Organisation, i.Name, "pull", prName)
+	//debug
+	return util.UrlJoin("http://"+i.Host, i.Organisation, i.Name, "pull", prName)
+	//return util.UrlJoin("https://"+i.Host, i.Organisation, i.Name, "pull", prName)
 }
 
 // HttpCloneURL returns the HTTPS git URL this repository
@@ -43,7 +45,8 @@ func (i *GitRepository) HttpURL() string {
 func (i *GitRepository) HttpsURL() string {
 	host := i.Host
 	if !strings.Contains(host, ":/") {
-		host = "https://" + host
+		//debug replace with http
+		host = "http://" + host
 	}
 	return util.UrlJoin(host, i.Organisation, i.Name)
 }
@@ -58,7 +61,8 @@ func (i *GitRepository) HostURL() string {
 			u2, err := url.Parse(u)
 			if err != nil {
 				// probably a git@ URL
-				return "https://" + answer
+				//debug replace with http
+				return "http://" + answer
 			}
 			s := u2.Scheme
 			if s != "" {
@@ -68,7 +72,8 @@ func (i *GitRepository) HostURL() string {
 				return s + answer
 			}
 		}
-		return "https://" + answer
+		//debug - replace with http
+		return "http://" + answer
 	}
 	return answer
 }
@@ -88,8 +93,9 @@ func (i *GitRepository) URLWithoutUser() string {
 
 	}
 	host := i.Host
+	//debug - replace with http
 	if !strings.Contains(host, ":/") {
-		host = "https://" + host
+		host = "http://" + host
 	}
 	return host
 }
@@ -106,8 +112,9 @@ func (i *GitRepository) HostURLWithoutUser() string {
 
 	}
 	host := i.Host
+	//debug - replace with http
 	if !strings.Contains(host, ":/") {
-		host = "https://" + host
+		host = "http://" + host
 	}
 	return host
 }
@@ -133,7 +140,8 @@ func ParseGitURL(text string) (*GitRepository, error) {
 			answer.Host = GitHubHost
 		}
 		if answer.Scheme == "" {
-			answer.Scheme = "https"
+			//debug - replace with http
+			answer.Scheme = "http"
 		}
 		answer.Scheme = u.Scheme
 		return parsePath(u.Path, &answer, true)
@@ -174,7 +182,8 @@ func ParseGitOrganizationURL(text string) (*GitRepository, error) {
 			answer.Host = GitHubHost
 		}
 		if answer.Scheme == "" {
-			answer.Scheme = "https"
+			//debug - replace with http
+			answer.Scheme = "http"
 		}
 		answer.Scheme = u.Scheme
 		return parsePath(u.Path, &answer, false)

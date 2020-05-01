@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	jenkinsio "github.com/jenkins-x/jx/pkg/apis/jenkins.io"
@@ -431,7 +432,12 @@ func ApplyPipeline(jxClient versioned.Interface, tektonClient tektonclient.Inter
 			return errors.Wrapf(err, "failed to create/update PipelineResource %s in namespace %s", resource.Name, ns)
 		}
 		if resource.Spec.Type == pipelineapi.PipelineResourceTypeGit {
+			//debug
+			log.Logger().Infof("pipelines - 434 Details 10 %s\n", activityKey)
 			gitURL := activityKey.GitInfo.HttpCloneURL()
+			log.Logger().Infof("pipelines - 436 Details 10 %s\n", gitURL)
+			gitURL = strings.Replace(gitURL, "https", "http", -1)
+			log.Logger().Infof("pipelines - 438 Details 10 %s\n", gitURL)
 			log.Logger().Infof("upserted PipelineResource %s for the git repository %s", info(resource.Name), info(gitURL))
 		} else {
 			log.Logger().Infof("upserted PipelineResource %s", info(resource.Name))

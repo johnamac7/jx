@@ -1445,15 +1445,18 @@ func (options *InstallOptions) buildGitRepositoryOptionsForEnvironments() (*gits
 	config := authConfigSvc.Config()
 
 	server := config.CurrentAuthServer()
+	log.Logger().Infof("Using server %s.", util.ColorInfo(server))
 	if server == nil {
 		return nil, fmt.Errorf("no current git server set in the configuration")
 	}
 	user := config.CurrentUser(server, false)
+	log.Logger().Infof("Using user %s.", util.ColorInfo(user))
 	if user == nil {
 		return nil, fmt.Errorf("no current git user set in configuration for server '%s'", server.Label())
 	}
 
 	org := options.Flags.EnvironmentGitOwner
+	log.Logger().Infof("Using org %s.", util.ColorInfo(org))
 	if org == "" {
 		if options.BatchMode {
 			jxClient, _, err := options.JXClientAndDevNamespace()
@@ -1710,6 +1713,7 @@ func (options *InstallOptions) generateGitOpsDevEnvironmentConfig(gitOpsDir stri
 			if err != nil {
 				return "", errors.Wrap(err, "initializing the dev environment repository")
 			}
+			log.Logger().Infof("Using cloneUrl %s.", util.ColorInfo(repo.CloneURL))
 			err = options.ModifyDevEnvironment(func(env *v1.Environment) error {
 				env.Spec.Source.URL = repo.CloneURL
 				env.Spec.Source.Ref = "master"

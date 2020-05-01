@@ -38,6 +38,8 @@ func (d *CreateRepoData) GetRepository() (*GitRepository, error) {
 
 // CreateRepository creates the repository - failing if it already exists
 func (d *CreateRepoData) CreateRepository() (*GitRepository, error) {
+	//debug
+	log.Logger().Infof("repoName/org %s/%s\n", util.ColorInfo(d.RepoName), util.ColorInfo(d.Organisation))
 	return d.GitProvider.CreateRepository(d.Organisation, d.RepoName, !d.Public)
 }
 
